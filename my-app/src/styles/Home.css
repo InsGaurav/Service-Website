@@ -1,0 +1,129 @@
+.home-wrapper {
+  background-color: black;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+.hero-section {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  padding-top: 120px;
+  text-align: center;
+}
+
+.bg-shape,
+.bg-abstract {
+  position: absolute;
+  top: 20px;
+  left: 26px;
+  width: 1388px;
+  height: 725px;
+  z-index: 0;
+}
+
+.bg-abstract {
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.hero-content h1 {
+  font-size: 64px;
+  line-height: 1.1;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+}
+
+.hero-content span {
+  color: transparent;
+  -webkit-text-stroke: 1px white;
+  text-stroke: 1px white;
+}
+
+.hero-content p {
+  font-size: 16px;
+  margin-top: 20px;
+  line-height: 1.4;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-btn {
+  margin-top: 30px;
+  background-color: #a444c2;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 24px;
+  border-radius: 7px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: white;
+  cursor: pointer;
+  position: relative;
+}
+
+.hero-image {
+  position: absolute;
+  bottom: 0;
+  left: 35px;
+  z-index: 2;
+}
+
+.hero-image img {
+  height: 419px;
+  width: auto;
+  object-fit: contain;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+.partner-logos {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  z-index: 2;
+  background: transparent;
+}
+
+.partner-logos img {
+  height: 63px;
+  width: 210px;
+  object-fit: contain;
+}
+
+.bottom-fade {
+  height: 90px;
+  width: 100%;
+  background: linear-gradient(to right, black, transparent, black);
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+}

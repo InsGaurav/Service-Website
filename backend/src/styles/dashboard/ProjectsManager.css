@@ -1,0 +1,142 @@
+/* Projects Manager */
+
+/* Container and typography */
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title {
+  color: #34d399;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+/* Form styling */
+.project-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.project-form input,
+.project-form select {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  flex-grow: 1; /* Let inputs expand */
+  min-width: 160px; /* Ensure decent size on smaller screens */
+}
+
+.project-form select {
+  min-width: 140px;
+  max-width: 160px;
+}
+
+.project-form .btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  align-self: center; /* Center vertically with inputs */
+}
+
+/* Button colors */
+.btn-add {
+  background-color: #34d399;
+  color: #0f172a;
+}
+
+.btn-edit {
+  background-color: #3b82f6;
+  color: #f8fafc;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  color: #f8fafc;
+}
+
+/* Project cards grid */
+.project-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Fix for single item - shrink to fit and center */
+@supports(selector(:has(*))) {
+  .project-list:has(> *:only-child) {
+    display: inline-grid;
+    grid-template-columns: minmax(220px, 1fr);
+    justify-content: center;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+/* Individual project card */
+.project-card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Fill vertical space */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 290px; /* Consistent card height */
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Image styling */
+.project-card img {
+  width: 100%;
+  height: 140px; /* Slightly increased height */
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+/* Headings and text */
+.project-card h3 {
+  margin: 10px 0 5px;
+  color: #34d399;
+  font-size: 1.2rem;
+}
+
+.project-card p {
+  margin: 4px 0;
+  color: #e2e8f0;
+  flex-grow: 1; /* Pushes actions down */
+}
+
+/* Action buttons container */
+.project-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Additional styling for buttons inside cards if needed */
+.project-actions button {
+  min-width: 70px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}

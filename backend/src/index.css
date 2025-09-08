@@ -1,0 +1,20 @@
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  main {
+    flex: 1; /* This ensures footer stays at the bottom if content is short */
+  }
+  
+ 
+/* In your global CSS file, e.g., index.css or App.css */
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: #000; /* or any color that fits your design */
+  color: white; /* if your text should be white */
+  height: 100%;
+}
+  

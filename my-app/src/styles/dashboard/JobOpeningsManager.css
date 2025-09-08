@@ -1,0 +1,165 @@
+/* src/styles/dashboard/JobOpeningsManager.css */
+
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title {
+  color: #34d399;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+/* Form Panel */
+.job-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  max-width: 400px;
+}
+
+/* Inputs, Textarea, and Select */
+.job-form input,
+.job-form textarea,
+.job-form select {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.job-form input::placeholder,
+.job-form textarea::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+/* Dropdown select - styled to match inputs */
+.job-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #1e293b;
+  color: #f8fafc;
+  border: none;
+  padding-right: 2.5em; /* space for arrow */
+  background-image: url("data:image/svg+xml;utf8,<svg width='16' height='16' fill='gray' xmlns='http://www.w3.org/2000/svg'><path d='M4 6l4 4 4-4'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  cursor: pointer;
+}
+
+/* Focus and hover effects */
+.job-form input:focus,
+.job-form textarea:focus,
+.job-form select:focus {
+  outline: none;
+  border: 2px solid #34d399;
+}
+
+/* Form Buttons */
+.job-form .btn-add,
+.job-form .btn-edit {
+  width: 140px;
+  align-self: center;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s;
+}
+
+.job-form .btn-add {
+  background-color: #34d399;
+  color: #0f172a;
+}
+.job-form .btn-edit {
+  background: #3b82f6;
+  color: #f8fafc;
+}
+.job-form .btn-add:hover {
+  background: #059669;
+}
+.job-form .btn-edit:hover {
+  background: #2563eb;
+}
+
+/* Job list/grid */
+.job-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.job-card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 18px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.job-card h3 {
+  margin: 0 0 5px;
+  color: #34d399;
+  font-size: 1.1rem;
+}
+.job-card .meta {
+  color: #7dd3fc;
+  font-size: 0.97rem;
+  margin-bottom: 6px;
+}
+.job-card .desc {
+  color: #e2e8f0;
+  font-size: 0.96rem;
+  margin-bottom: 10px;
+  flex-grow: 1;
+}
+.job-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.job-actions button {
+  min-width: 70px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-edit {
+  background-color: #3b82f6;
+  color: #f8fafc;
+}
+.btn-delete {
+  background-color: #ef4444;
+  color: #f8fafc;
+}
+.btn-edit:hover {
+  background-color: #2563eb;
+}
+.btn-delete:hover {
+  background-color: #dc2626;
+}

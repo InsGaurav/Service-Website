@@ -9,10 +9,11 @@ const userDataRoutes = require('./routes/userDataRoutes'); // user profile
 const passport = require('passport');
 const faqRoutes = require('./routes/faq');
 const projectRoutes = require('./routes/project');
-const serviceRoutes = require('./routes/service');
+const serviceRoutes = require('./routes/serviceCard');
 const teamRoutes = require('./routes/team');
 const testimonialRoutes = require('./routes/testimonial');
 const jobRoutes = require('./routes/jobRoutes');
+const homepage = require('./routes/homepage');
 
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/team', teamRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/jobs', require('./routes/jobRoutes')); // Job routes
+app.use('/api/homepage',homepage); // Homepage routes
 
 // Connect DB and start server
 connectDB();

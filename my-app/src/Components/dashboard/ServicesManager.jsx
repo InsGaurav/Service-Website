@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const ServicesManager = () => {
   const [services, setServices] = useState([]);
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [iconChar, setIconChar] = useState("");
   const [editIndex, setEditIndex] = useState(null);
@@ -35,7 +35,7 @@ const ServicesManager = () => {
 
   // Reset form fields
   const resetForm = () => {
-    setTitle("");
+    setName("");
     setDescription("");
     setIconChar("");
     setEditIndex(null);
@@ -43,7 +43,7 @@ const ServicesManager = () => {
 
   // Add service (API & state)
   const handleAdd = async () => {
-    if (!title.trim() || !description.trim() || !iconChar.trim()) {
+    if (!name.trim() || !description.trim() || !iconChar.trim()) {
       alert("Please fill all fields!");
       return;
     }
@@ -54,10 +54,11 @@ const ServicesManager = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ name: title, description, icon: iconChar })
+        body: JSON.stringify({ name, description, icon: iconChar })
       });
       if (!res.ok) throw new Error("Failed to add service");
       const newService = await res.json();
+      console.log("Added service:", newService);
       setServices([...services, newService]);
       resetForm();
     } catch (err) {
@@ -75,6 +76,7 @@ const ServicesManager = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to delete service");
+      console.log(`Deleted service id: ${id}`);
       setServices(services.filter((srv) => srv._id !== id));
     } catch (err) {
       alert(err.message);
@@ -85,14 +87,14 @@ const ServicesManager = () => {
   const handleEdit = (index) => {
     const service = services[index];
     setEditIndex(index);
-    setTitle(service.name);
+    setName(service.name);
     setDescription(service.description);
     setIconChar(service.icon || "");
   };
 
   // Save edited service (API & state)
   const handleSave = async () => {
-    if (!title.trim() || !description.trim() || !iconChar.trim()) {
+    if (!name.trim() || !description.trim() || !iconChar.trim()) {
       alert("Please fill all fields!");
       return;
     }
@@ -104,10 +106,11 @@ const ServicesManager = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ name: title, description, icon: iconChar })
+        body: JSON.stringify({ name, description, icon: iconChar })
       });
       if (!res.ok) throw new Error("Failed to update service");
       const updatedService = await res.json();
+      console.log("Updated service:", updatedService);
       setServices(
         services.map((srv, i) => (i === editIndex ? updatedService : srv))
       );
@@ -124,9 +127,9 @@ const ServicesManager = () => {
       <div className="service-form">
         <input
           type="text"
-          placeholder="Service Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Service Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <input
           type="text"
@@ -149,6 +152,9 @@ const ServicesManager = () => {
             Add Service
           </button>
         )}
+        <button className="btn btn-reset" onClick={resetForm}>
+          Reset
+        </button>
       </div>
 
       {loading ? (

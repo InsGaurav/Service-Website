@@ -1,0 +1,104 @@
+/* src/styles/dashboard/HomeSectionManager.css */
+
+.home-manager {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 20px;
+  background-color: #0f172a;
+  border-radius: 12px;
+  color: #e0e7ff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.home-block {
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  border: 1.5px solid #334155;
+}
+
+.home-block h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #34d399;
+  margin-bottom: 16px;
+}
+
+.feature-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+input[type="text"],
+textarea {
+  flex-grow: 1;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #0f172a;
+  color: #cad5ff;
+  outline: none;
+  resize: vertical;
+}
+
+textarea {
+  min-height: 50px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+}
+
+button,
+.add-btn,
+.save-btn {
+  background: linear-gradient(90deg, #34d399 0%, #059669 100%);
+  color: #0f172a;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover,
+.add-btn:hover,
+.save-btn:hover {
+  background: linear-gradient(90deg, #059669 0%, #34d399 100%);
+}
+
+button {
+  flex-shrink: 0;
+}
+
+.add-btn {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.save-btn {
+  display: block;
+  margin: 0 auto;
+  margin-top: 24px;
+  font-size: 1.15rem;
+  padding: 14px 30px;
+  width: 220px;
+}
+
+button:active {
+  opacity: 0.8;
+}
+
+h4 {
+  margin-top: 18px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #a3e635;
+}

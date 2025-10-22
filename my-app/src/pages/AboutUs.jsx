@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useEffect } from "react";
+import React, { useEffect , useState} from "react";
 import "../styles/AboutUs.css";
 import teamMembers  from "../data/teamData";
 import FaqSec from "../hooks/AboutHooks/Faq";
@@ -9,7 +9,8 @@ import FaqSec from "../hooks/AboutHooks/Faq";
 
 
 const AboutUs = () => {
-  
+  const token = localStorage.getItem("token");
+  const API_URL = import.meta.env.VITE_API_URL ;
 
   useEffect(() => {
     const observerOptions = {
@@ -62,6 +63,27 @@ const AboutUs = () => {
       counterObserver.observe(counter);
     });
   }, []);
+
+
+
+  const [teamMembers, setTeamMembers] = useState([]);
+
+  useEffect(() => {
+    async function fetchTeam() {
+      try {
+        const res = await fetch(`${API_URL}/team`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setTeamMembers(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch team members:", err);
+      }
+    }
+    fetchTeam();
+  }, [token]);
 
   return (
     <div>
@@ -187,39 +209,39 @@ const AboutUs = () => {
       <section className="team-section">
         <h2 className="team-title">Our Team</h2>
         <div className="team-grid">
-          {teamMembers.map((member, index) => (
-            <div className="team-member" key={index}>
-              <div
-                className="team-member-image"
-                style={{ backgroundImage: `url(${member.image})` }}
-              ></div>
-              <div className="team-member-info">
-                <div className="team-member-details">
-                  <div className="team-member-text">
-                    <h3 className="team-member-name">{member.name}</h3>
-                    <p className="team-member-role">{member.role}</p>
+          {teamMembers.length === 0 ? (
+            <p>Loading team members...</p>
+          ) : (
+            teamMembers.map((member, index) => (
+              <div className="team-member" key={member._id || index}>
+                <div
+                  className="team-member-image"
+                  style={{ backgroundImage: `url(${member.photo || member.image})` }}
+                ></div>
+                <div className="team-member-info">
+                  <h3 className="team-member-name">{member.name}</h3>
+                  <p className="team-member-role">{member.role}</p>
+                  <div className="team-member-social">
+                    {member.socialIcons?.map((icon, i) =>
+                      icon.src.endsWith(".svg") ? (
+                        <img key={i} src={icon.src} alt={icon.alt} />
+                      ) : (
+                        <div
+                          key={i}
+                          style={{
+                            backgroundImage: `url(${icon.src})`,
+                            backgroundSize: "100% 100%",
+                            width: "20px",
+                            height: "20px"
+                          }}
+                        ></div>
+                      )
+                    )}
                   </div>
                 </div>
-                <div className="team-member-social">
-                  {member.socialIcons.map((icon, i) =>
-                    icon.src.endsWith(".svg") ? (
-                      <img key={i} src={icon.src} alt={icon.alt} />
-                    ) : (
-                      <div
-                        key={i}
-                        style={{
-                          backgroundImage: `url(${icon.src})`,
-                          backgroundSize: "100% 100%",
-                          width: "20px",
-                          height: "20px",
-                        }}
-                      ></div>
-                    )
-                  )}
-                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </section>
 

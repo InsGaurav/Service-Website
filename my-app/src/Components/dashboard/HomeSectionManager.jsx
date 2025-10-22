@@ -1,482 +1,422 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/dashboard/homeSectionManager.css";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL; // e.g., http://localhost:5000/api
+const token = localStorage.getItem("token");
 
-const defaultData = {
+const resourceConfig = {
   hero: {
-    title: "",
-    description: "",
-    bgShape: "",
-    bgAbstract: "",
-    heroImage: "",
-    partners: []
+    label: "Hero",
+    endpoint: "homepage/hero",
+    fields: ["title", "description", "bgShape", "bgAbstract", "heroImage", "partners"],
+    placeholders: {
+      title: "Hero Title",
+      description: "Hero Description",
+      bgShape: "BG Shape URL",
+      bgAbstract: "BG Abstract URL",
+      heroImage: "Hero Image URL",
+      partners: "Partner Logos (Add each separately)"
+    }
   },
   features: {
-    heading: "",
-    description: "",
-    vectorIcon: "",
-    image: "",
-    star: "",
-    ergonomic: "",
-    award: "",
-    bgImage: "",
-    testimonial: { name: "", quote: "" }
+    label: "Features",
+    endpoint: "homepage/features",
+    fields: ["heading", "description", "vectorIcon", "image", "star", "ergonomic", "award", "bgImage", "testimonialName", "testimonialQuote"],
+    placeholders: {
+      heading: "Heading",
+      description: "Description",
+      vectorIcon: "Vector Icon URL",
+      image: "Image URL",
+      star: "Star Image URL",
+      ergonomic: "Ergonomic Text",
+      award: "Award Text",
+      bgImage: "Background Image URL",
+      testimonialName: "Testimonial Name",
+      testimonialQuote: "Testimonial Quote"
+    }
   },
-  services: [],
-  tools: [],
-  industries: [],
-  additionalIndustryImages: [],
+  services: {
+    label: "Services",
+    endpoint: "homepage/services",
+    fields: ["id", "title", "description", "image"],
+    placeholders: {
+      id: "Service ID",
+      title: "Service Title",
+      description: "Description",
+      image: "Image URL"
+    }
+  },
+  tools: {
+    label: "Tools",
+    endpoint: "homepage/tools",
+    fields: ["src"],
+    placeholders: { src: "Tool Image URL" }
+  },
+  industries: {
+    label: "Industries",
+    endpoint: "homepage/industries",
+    fields: ["type"],
+    placeholders: { type: "Column Type (e.g., left-col, middle-col, right-col)" }
+  },
+  additionalIndustryImages: {
+    label: "Additional Industry Images",
+    endpoint: "homepage/additional-industry-images",
+    fields: ["src", "belowText"],
+    placeholders: { src: "Image URL", belowText: "Below Text" }
+  },
   cta: {
-    bg: "",
-    label: "",
-    title: "",
-    buttonLabel: "",
-    mask: ""
+    label: "CTA",
+    endpoint: "homepage/ctas",
+    fields: ["bg", "label", "title", "buttonLabel", "mask"],
+    placeholders: {
+      bg: "CTA Background URL",
+      label: "CTA Label",
+      title: "CTA Title",
+      buttonLabel: "CTA Button Label",
+      mask: "CTA Mask URL"
+    }
   }
 };
 
-const HomeManager = () => {
-  const [home, setHome] = useState(defaultData);
-  const [loading, setLoading] = useState(false);
+function HomeSectionManager() {
+  const [section, setSection] = useState("hero");
+  const [dbEntries, setDbEntries] = useState([]);
+  const [formData, setFormData] = useState({});
+  const [partners, setPartners] = useState([""]);
 
+  const config = resourceConfig[section];
+  const isPartners = section === "hero";
+
+  // Fetch data on section change
   useEffect(() => {
-    const fetchHome = async () => {
-      setLoading(true);
+    (async () => {
       try {
-        const res = await fetch(`${API_URL}/home`);
-        if (!res.ok) throw new Error("Failed to fetch home page data");
-        const data = await res.json();
-        setHome({ ...defaultData, ...data });
+        const res = await fetch(`${API_URL}/${config.endpoint}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error("Failed to fetch data");
+        const result = await res.json();
+        setDbEntries(result);
       } catch (err) {
-        alert(err.message);
+        setDbEntries([]);
       } finally {
-        setLoading(false);
+        setFormData({});
+        setPartners([""]);
       }
-    };
-    fetchHome();
-  }, []);
+    })();
+  }, [section]);
 
-  // Update helper for nested objects
-  const update = (section, key, value) => {
-    setHome((prev) => ({
-      ...prev,
-      [section]: { ...prev[section], [key]: value }
-    }));
+  // Shared input change handler
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Array items update
-  const handleArrayChange = (section, idx, field, value) => {
-    setHome((prev) => ({
-      ...prev,
-      [section]: prev[section].map((item, i) =>
-        i === idx ? { ...item, [field]: value } : item
-      )
-    }));
+  // Partners control for hero
+  const handlePartnerChange = (i, value) => {
+    setPartners(prev => prev.map((p, idx) => (idx === i ? value : p)));
   };
+  const addPartner = () => setPartners(prev => [...prev, ""]);
+  const removePartner = i => setPartners(prev => prev.filter((_, idx) => idx !== i));
 
-  // Add array item
-  const addToArray = (section, obj) => {
-    setHome((prev) => ({
-      ...prev,
-      [section]: [...prev[section], obj]
-    }));
-  };
-
-  // Remove array item
-  const removeFromArray = (section, idx) => {
-    setHome((prev) => ({
-      ...prev,
-      [section]: prev[section].filter((_, i) => i !== idx)
-    }));
-  };
-
-  // Save all data
-  const handleSave = async () => {
-    setLoading(true);
+  // Add entry
+  const handleAdd = async () => {
+    let payload = { ...formData };
+    if (isPartners) payload.partners = partners.filter(p => p.trim());
+    if (section === "features") {
+      payload.testimonial = {
+        name: payload.testimonialName,
+        quote: payload.testimonialQuote
+      };
+      delete payload.testimonialName;
+      delete payload.testimonialQuote;
+    }
+    // For industries, initialize images if needed
+    if (section === "industries" && !payload.images) {
+      payload.images = [];
+    }
     try {
-      const res = await fetch(`${API_URL}/home`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(home)
+      const res = await fetch(`${API_URL}/${config.endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error("Failed to update home page content");
-      alert("Home content updated!");
+      if (!res.ok) throw new Error("Failed to add entry");
+      const updated = await res.json();
+      setDbEntries(prev => [...prev, updated]);
+      setFormData({});
+      setPartners([""]);
     } catch (err) {
-      alert(err.message);
-    } finally {
-      setLoading(false);
+      alert(`Error: ${err.message}`);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  // Delete entry
+  const handleDelete = async id => {
+    try {
+      const res = await fetch(`${API_URL}/${config.endpoint}/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to delete entry");
+      setDbEntries(prev => prev.filter(e => e._id !== id));
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
 
+  // Edit entry
+  const handleEdit = idx => {
+    const entry = dbEntries[idx];
+    const entryCopy = { ...entry };
+    if (isPartners) setPartners(entryCopy.partners || [""]);
+    if (section === "features" && entryCopy.testimonial) {
+      entryCopy.testimonialName = entryCopy.testimonial.name;
+      entryCopy.testimonialQuote = entryCopy.testimonial.quote;
+    }
+    setFormData(entryCopy);
+  };
+
+  // Update entry (save)
+  const handleSaveUpdate = async () => {
+    let payload = { ...formData };
+    if (isPartners) payload.partners = partners.filter(p => p.trim());
+    if (section === "features") {
+      payload.testimonial = {
+        name: payload.testimonialName,
+        quote: payload.testimonialQuote
+      };
+      delete payload.testimonialName;
+      delete payload.testimonialQuote;
+    }
+    try {
+      const res = await fetch(`${API_URL}/${config.endpoint}/${payload._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("Failed to update entry");
+      await fetch(`${API_URL}/${config.endpoint}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then(r => r.json()).then(setDbEntries);
+      setFormData({});
+      setPartners([""]);
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  // Industries Section with nested images
+  if (section === "industries") {
+    const handleNestedImageChange = (idx, field, val) => {
+      const newImages = [...(formData.images || [])];
+      newImages[idx] = { ...newImages[idx], [field]: val };
+      handleInputChange("images", newImages);
+    };
+
+    const addNestedImage = () => {
+      const newImages = [...(formData.images || []), { src: "", overlay: "", cardTitle: "", bg: "" }];
+      handleInputChange("images", newImages);
+    };
+
+    const removeNestedImage = (idx) => {
+      const newImages = (formData.images || []).filter((_, i) => i !== idx);
+      handleInputChange("images", newImages);
+    };
+
+    return (
+      <div className="dashboard-section home-manager">
+        <h2>Manage Homepage Sections</h2>
+        {/* Persisted Tabs */}
+        <div className="tabs">
+          {Object.keys(resourceConfig).map((key) => (
+            <button
+              key={key}
+              className={section === key ? "active" : ""}
+              onClick={() => {
+                setSection(key);
+                setFormData({});
+                setPartners([""]);
+              }}
+            >
+              {resourceConfig[key].label}
+            </button>
+          ))}
+        </div>
+
+        {/* Industry Form */}
+        <div className="industry-section">
+          <h3>Industry Columns</h3>
+          <input
+            type="text"
+            placeholder="Column Type (e.g., left-col, middle-col, right-col)"
+            value={formData.type || ""}
+            onChange={(e) => handleInputChange("type", e.target.value)}
+            style={{ width: "60%", marginBottom: "8px" }}
+          />
+
+          <h4>Images for this Column</h4>
+          {(formData.images || []).map((image, idx) => (
+            <div key={idx} style={{ border: "1px solid #ddd", borderRadius: "6px", padding: "10px", marginBottom: "10px", background: "#f9f9f9" }}>
+              <input placeholder="Image URL" value={image.src || ""} onChange={(e) => handleNestedImageChange(idx, "src", e.target.value)} style={{ width: "100%", marginBottom: "6px" }} />
+              <input placeholder="Overlay" value={image.overlay || ""} onChange={(e) => handleNestedImageChange(idx, "overlay", e.target.value)} style={{ width: "100%", marginBottom: "6px" }} />
+              <input placeholder="Card Title" value={image.cardTitle || ""} onChange={(e) => handleNestedImageChange(idx, "cardTitle", e.target.value)} style={{ width: "100%", marginBottom: "6px" }} />
+              <input placeholder="Background" value={image.bg || ""} onChange={(e) => handleNestedImageChange(idx, "bg", e.target.value)} style={{ width: "100%", marginBottom: "6px" }} />
+              <button onClick={() => removeNestedImage(idx)} style={{ background: "#e63946", color: "white", border: "none", padding: "6px 12px", borderRadius: "4px" }}>Remove Image</button>
+            </div>
+          ))}
+
+          <button onClick={addNestedImage} style={{ marginBottom: "10px", padding: "8px 12px" }}>+ Add Image</button>
+
+          <button onClick={formData._id ? handleSaveUpdate : handleAdd} style={{ marginRight: "8px" }}>
+            {formData._id ? "Save Changes" : "Add Industry Column"}
+          </button>
+          {formData._id && (<button onClick={() => setFormData({})} style={{ padding: "8px 12px" }}>Cancel Edit</button>)}
+
+          {/* List industries below */}
+          <h3 style={{ marginTop: "2rem" }}>Existing Industry Columns</h3>
+          {dbEntries.length === 0 ? <p>No industries found.</p> : (
+            dbEntries.map((industry, idx) => (
+              <div key={industry._id || idx} style={{ border: "1px solid #ccc", borderRadius: "6px", marginBottom: "1rem", padding: "10px" }}>
+                <h4>Type: {industry.type}</h4>
+                <ul>
+                  {(industry.images || []).map((img, i) => (
+                    <li key={i}>
+                      <strong>{img.cardTitle || "Untitled"}</strong><br />
+                      Src: {img.src}<br />
+                      Overlay: {img.overlay}<br />
+                      Background: {img.bg}
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={() => handleEdit(idx)} style={{ marginRight: "8px" }}>Edit</button>
+                <button onClick={() => handleDelete(industry._id)}>Delete</button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Default rendering for all other sections - keep tabs visible always
   return (
     <div className="dashboard-section home-manager">
-      {/* Hero Section */}
-      <div className="home-block">
-        <h2>Hero Section</h2>
-        <input
-          value={home.hero.title}
-          onChange={(e) => update("hero", "title", e.target.value)}
-          placeholder="Hero Title"
-        />
-        <textarea
-          value={home.hero.description}
-          onChange={(e) => update("hero", "description", e.target.value)}
-          placeholder="Hero Description"
-        />
-        <input
-          value={home.hero.bgShape}
-          onChange={(e) => update("hero", "bgShape", e.target.value)}
-          placeholder="BG Shape Image URL"
-        />
-        <input
-          value={home.hero.bgAbstract}
-          onChange={(e) => update("hero", "bgAbstract", e.target.value)}
-          placeholder="BG Abstract Image URL"
-        />
-        <input
-          value={home.hero.heroImage}
-          onChange={(e) => update("hero", "heroImage", e.target.value)}
-          placeholder="Hero Main Image URL"
-        />
-        <h4>Partner Logos</h4>
-        {home.hero.partners.map((p, i) => (
-          <div className="feature-row" key={i}>
-            <input
-              value={p}
-              onChange={(e) =>
-                setHome((prev) => ({
-                  ...prev,
-                  hero: {
-                    ...prev.hero,
-                    partners: prev.hero.partners.map((img, idx) =>
-                      idx === i ? e.target.value : img
-                    )
-                  }
-                }))
-              }
-              placeholder="Logo Image URL"
-            />
-            <button
-              onClick={() =>
-                setHome((prev) => ({
-                  ...prev,
-                  hero: {
-                    ...prev.hero,
-                    partners: prev.hero.partners.filter((_, idx) => idx !== i)
-                  }
-                }))
-              }
-            >
-              Delete
-            </button>
-          </div>
+      <h2>Manage Homepage Sections</h2>
+      <div className="tabs">
+        {Object.keys(resourceConfig).map((key) => (
+          <button
+            key={key}
+            className={section === key ? "active" : ""}
+            onClick={() => {
+              setSection(key);
+              setFormData({});
+              setPartners([""]);
+            }}
+          >
+            {resourceConfig[key].label}
+          </button>
         ))}
-        <button
-          className="add-btn"
-          onClick={() =>
-            setHome((prev) => ({
-              ...prev,
-              hero: { ...prev.hero, partners: [...prev.hero.partners, ""] }
-            }))
-          }
-        >
-          Add Partner Logo
-        </button>
       </div>
 
-      {/* Features Section */}
-      <div className="home-block">
-        <h2>Features Section</h2>
-        <input
-          value={home.features.heading}
-          onChange={(e) => update("features", "heading", e.target.value)}
-          placeholder="Heading"
-        />
-        <textarea
-          value={home.features.description}
-          onChange={(e) => update("features", "description", e.target.value)}
-          placeholder="Description"
-        />
-        <input
-          value={home.features.vectorIcon}
-          onChange={(e) => update("features", "vectorIcon", e.target.value)}
-          placeholder="Vector Icon URL"
-        />
-        <input
-          value={home.features.image}
-          onChange={(e) => update("features", "image", e.target.value)}
-          placeholder="Main Feature Image URL"
-        />
-        <input
-          value={home.features.star}
-          onChange={(e) => update("features", "star", e.target.value)}
-          placeholder="Star Image URL"
-        />
-        <input
-          value={home.features.ergonomic}
-          onChange={(e) => update("features", "ergonomic", e.target.value)}
-          placeholder="Ergonomic Text"
-        />
-        <input
-          value={home.features.award}
-          onChange={(e) => update("features", "award", e.target.value)}
-          placeholder="Award Text"
-        />
-        <input
-          value={home.features.bgImage}
-          onChange={(e) => update("features", "bgImage", e.target.value)}
-          placeholder="Testimonial BG Image URL"
-        />
-        <h4>Testimonial</h4>
-        <input
-          value={home.features.testimonial.name}
-          onChange={(e) =>
-            setHome((prev) => ({
-              ...prev,
-              features: {
-                ...prev.features,
-                testimonial: {
-                  ...prev.features.testimonial,
-                  name: e.target.value
+      {/* Inputs for adding/editing */}
+      <div className="add-form" style={{ marginBottom: "2rem" }}>
+        {config.fields.map((field) => {
+          if (isPartners && field === "partners") {
+            return (
+              <div key={field}>
+                <label>Partner Logos:</label>
+                {partners.map((p, idx) => (
+                  <div key={idx} style={{ display: "flex", gap: "6px", marginBottom: "4px" }}>
+                    <input
+                      type="text"
+                      value={p}
+                      onChange={(e) => handlePartnerChange(idx, e.target.value)}
+                      placeholder={config.placeholders.partners}
+                      style={{ width: "68%" }}
+                    />
+                    {partners.length > 1 && (
+                      <button type="button" onClick={() => removePartner(idx)}>
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button type="button" onClick={addPartner} style={{ marginTop: "4px" }}>
+                  Add Partner
+                </button>
+              </div>
+            );
+          }
+          return (
+            <input
+              key={field}
+              type="text"
+              value={formData[field] || ""}
+              onChange={(e) => handleInputChange(field, e.target.value)}
+              placeholder={config.placeholders[field]}
+              style={{ width: "80%", marginBottom: "8px" }}
+            />
+          );
+        })}
+        <button onClick={formData._id ? handleSaveUpdate : handleAdd} style={{ marginRight: "8px" }}>
+          {formData._id ? "Save Changes" : `Add ${config.label}`}
+        </button>
+        {formData._id && (
+          <button onClick={() => { setFormData({}); setPartners([""]); }}>
+            Cancel
+          </button>
+        )}
+      </div>
+
+      {/* Show DB entries */}
+      <div>
+        {dbEntries.length === 0 ? (
+          <p>No entries available.</p>
+        ) : (
+          dbEntries.map((entry, idx) => (
+            <div key={entry._id || idx} className="db-card" style={{
+              border: "1px solid #ddd",
+              borderRadius: "7px",
+              marginBottom: "20px",
+              padding: "12px"
+            }}>
+              {config.fields.map(f => {
+                if (isPartners && f === "partners") {
+                  return (
+                    <div key={f}>
+                      <strong>Partners:</strong>
+                      <ul>
+                        {(entry.partners || []).map((p, i) => <li key={i}>{p}</li>)}
+                      </ul>
+                    </div>
+                  );
                 }
-              }
-            }))
-          }
-          placeholder="Testimonial Name"
-        />
-        <textarea
-          value={home.features.testimonial.quote}
-          onChange={(e) =>
-            setHome((prev) => ({
-              ...prev,
-              features: {
-                ...prev.features,
-                testimonial: {
-                  ...prev.features.testimonial,
-                  quote: e.target.value
+                if (section === "features" && (f === "testimonialName" || f === "testimonialQuote")) {
+                  return null;
                 }
-              }
-            }))
-          }
-          placeholder="Testimonial Quote"
-        />
-      </div>
-
-      {/* Services Section */}
-      <div className="home-block">
-        <h2>Services Section</h2>
-        {home.services.map((serv, i) => (
-          <div key={i} className="feature-row">
-            <input
-              value={serv.id || ""}
-              onChange={(e) =>
-                handleArrayChange("services", i, "id", e.target.value)
-              }
-              placeholder="Service ID"
-            />
-            <input
-              value={serv.title || ""}
-              onChange={(e) =>
-                handleArrayChange("services", i, "title", e.target.value)
-              }
-              placeholder="Service Title"
-            />
-            <textarea
-              value={serv.description || ""}
-              onChange={(e) =>
-                handleArrayChange("services", i, "description", e.target.value)
-              }
-              placeholder="Service Description"
-            />
-            <input
-              value={serv.image || ""}
-              onChange={(e) =>
-                handleArrayChange("services", i, "image", e.target.value)
-              }
-              placeholder="Service Image URL"
-            />
-            <button onClick={() => removeFromArray("services", i)}>
-              Delete
-            </button>
-          </div>
-        ))}
-        <button
-          className="add-btn"
-          onClick={() =>
-            addToArray("services", {
-              id: "",
-              title: "",
-              description: "",
-              image: ""
-            })
-          }
-        >
-          Add Service
-        </button>
-      </div>
-
-      {/* Tools */}
-      <div className="home-block">
-        <h2>Tools Section</h2>
-        {home.tools.map((t, idx) => (
-          <div key={idx} className="feature-row">
-            <input
-              value={t}
-              onChange={(e) =>
-                setHome((prev) => ({
-                  ...prev,
-                  tools: prev.tools.map((img, i) =>
-                    i === idx ? e.target.value : img
+                return entry[f]
+                  ? (
+                    <p key={f}>
+                      <strong>{config.placeholders[f]}:</strong> {entry[f]}
+                    </p>
                   )
-                }))
-              }
-              placeholder="Tool Image URL"
-            />
-            <button
-              onClick={() =>
-                setHome((prev) => ({
-                  ...prev,
-                  tools: prev.tools.filter((_, i) => i !== idx)
-                }))
-              }
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-        <button
-          className="add-btn"
-          onClick={() =>
-            setHome((prev) => ({ ...prev, tools: [...prev.tools, ""] }))
-          }
-        >
-          Add Tool
-        </button>
+                  : null;
+              })}
+              {section === "features" && entry.testimonial?.name && (
+                <p>
+                  <strong>Testimonial Name:</strong> {entry.testimonial.name}
+                  <br />
+                  <strong>Testimonial Quote:</strong> {entry.testimonial.quote}
+                </p>
+              )}
+              <button onClick={() => handleEdit(idx)} style={{ marginRight: "8px" }}>Edit</button>
+              <button onClick={() => handleDelete(entry._id)}>Delete</button>
+            </div>
+          ))
+        )}
       </div>
-
-      {/* Industries */}
-      <div className="home-block">
-        <h2>Industries Section</h2>
-        {home.industries.map((ind, i) => (
-          <div key={i} className="feature-row">
-            <input
-              value={ind.name || ""}
-              onChange={(e) =>
-                handleArrayChange("industries", i, "name", e.target.value)
-              }
-              placeholder="Industry Name"
-            />
-            <button onClick={() => removeFromArray("industries", i)}>
-              Delete
-            </button>
-          </div>
-        ))}
-        <button
-          className="add-btn"
-          onClick={() => addToArray("industries", { name: "" })}
-        >
-          Add Industry
-        </button>
-      </div>
-
-      {/* Additional Industry Images */}
-      <div className="home-block">
-        <h2>Additional Industry Images</h2>
-        {home.additionalIndustryImages.map((img, i) => (
-          <div key={i} className="feature-row">
-            <input
-              value={img.src || ""}
-              onChange={(e) =>
-                setHome((prev) => ({
-                  ...prev,
-                  additionalIndustryImages: prev.additionalIndustryImages.map(
-                    (obj, idx) =>
-                      idx === i ? { ...obj, src: e.target.value } : obj
-                  )
-                }))
-              }
-              placeholder="Image URL"
-            />
-            <input
-              value={img.belowText || ""}
-              onChange={(e) =>
-                setHome((prev) => ({
-                  ...prev,
-                  additionalIndustryImages: prev.additionalIndustryImages.map(
-                    (obj, idx) =>
-                      idx === i ? { ...obj, belowText: e.target.value } : obj
-                  )
-                }))
-              }
-              placeholder="Below Text (optional)"
-            />
-            <button
-              onClick={() =>
-                setHome((prev) => ({
-                  ...prev,
-                  additionalIndustryImages:
-                    prev.additionalIndustryImages.filter((_, idx) => idx !== i)
-                }))
-              }
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-        <button
-          className="add-btn"
-          onClick={() =>
-            setHome((prev) => ({
-              ...prev,
-              additionalIndustryImages: [
-                ...prev.additionalIndustryImages,
-                { src: "", belowText: "" }
-              ]
-            }))
-          }
-        >
-          Add More Image
-        </button>
-      </div>
-
-      {/* CTA Section */}
-      <div className="home-block">
-        <h2>Call To Action (CTA) Section</h2>
-        <input
-          value={home.cta.bg}
-          onChange={(e) => update("cta", "bg", e.target.value)}
-          placeholder="CTA BG Image URL"
-        />
-        <input
-          value={home.cta.label}
-          onChange={(e) => update("cta", "label", e.target.value)}
-          placeholder="CTA Label"
-        />
-        <input
-          value={home.cta.title}
-          onChange={(e) => update("cta", "title", e.target.value)}
-          placeholder="CTA Title"
-        />
-        <input
-          value={home.cta.buttonLabel}
-          onChange={(e) => update("cta", "buttonLabel", e.target.value)}
-          placeholder="CTA Button Label"
-        />
-        <input
-          value={home.cta.mask}
-          onChange={(e) => update("cta", "mask", e.target.value)}
-          placeholder="CTA Mask Image URL"
-        />
-      </div>
-
-      <button className="save-btn" onClick={handleSave}>
-        Save All Sections
-      </button>
     </div>
   );
-};
+}
 
-export default HomeManager;
+export default HomeSectionManager;

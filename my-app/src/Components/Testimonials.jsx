@@ -1,9 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TestimonialSlider from "../hooks/ProjectHooks/testimonialSlider";
-import testimonials from "../data/TestimonialsData";
 import "../styles/Testimonials.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const token = localStorage.getItem("token");
+
 const Testimonials = () => {
+  const [testimonials, setTestimonials] = useState([]);
+
+  useEffect(() => {
+    async function fetchTestimonials() {
+      try {
+        const res = await fetch(`${API_URL}/testimonials`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setTestimonials(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch testimonials", err);
+      }
+    }
+    fetchTestimonials();
+  }, [token]);
+
   return (
     <section className="testimonials-section">
       <div className="testimonials-bg">

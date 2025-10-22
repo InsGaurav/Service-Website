@@ -11,6 +11,7 @@ import TestimonialsManager from "./TestimonialsManager";
 import ServicesManager from "./ServicesManager";
 import JobOpeningsManager from "./JobOpeningsManager";
 import HomeSectionManager from "./HomeSectionManager";
+import ProjectDetailsManager from "./ProjectDetailsManager";
 
 
 const DashboardHome = () => <h2>Welcome to Admin Dashboard</h2>;
@@ -34,6 +35,8 @@ const AdminDashboard = () => {
         return <TestimonialsManager />;
       case "jobs":
         return <JobOpeningsManager />;
+      case "project-details":
+        return <ProjectDetailsManager />;
       default:
         return <HomeSectionManager />;
     }
@@ -51,9 +54,9 @@ const AdminDashboard = () => {
           <li onClick={() => setActiveSection("projects")}>Manage Projects</li>
           <li onClick={() => setActiveSection("team")}>Manage Team</li>
           <li onClick={() => setActiveSection("jobs")}>Manage JOB Openings</li>
-          <li onClick={() => setActiveSection("testimonials")}>
-            Manage Testimonials
-          </li>
+          <li onClick={() => setActiveSection("testimonials")}> Manage Testimonials </li>
+          <li onClick={() => setActiveSection("project-details")}>Projects Details</li>
+
         </ul>
       </aside>
 

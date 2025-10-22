@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import projectData from "../../data/ProjectData";
+import { Link } from "react-router-dom";
 import "../../styles/Project.css";
+
 
 const categories = [
   "ALL PROJECTS",
@@ -10,7 +11,7 @@ const categories = [
   "GAME DEVELOPMENT",
 ];
 
-const Portfolio = () => {
+const Portfolio = ({ projects }) => {
   const [activeCategory, setActiveCategory] = useState("ALL PROJECTS");
 
   const handleFilterClick = (category) => {
@@ -19,8 +20,8 @@ const Portfolio = () => {
 
   const filteredProjects =
     activeCategory === "ALL PROJECTS"
-      ? projectData
-      : projectData.filter((project) => project.category === activeCategory);
+      ? projects
+      : projects.filter((project) => project.category === activeCategory);
 
   return (
     <section className="portfolio-section">
@@ -37,12 +38,27 @@ const Portfolio = () => {
       </div>
 
       <div className="portfolio-grid">
-        {filteredProjects.map((project, index) => (
-          <div key={index} className={`portfolio-item ${project.size}`}>
+        {filteredProjects.map((project) => (
+          <div
+            key={project._id}
+            className={`portfolio-item ${project.size || ""} project-card-link`}
+          >
             <img src={project.image} alt={project.title} />
             <div className="portfolio-overlay">
               <h3>{project.title}</h3>
-              <button className="know-more-btn">Know More</button>
+              {/* Use detailsId directly, no nested _id */}
+              {project.detailsId ? (
+                <Link
+                  to={`/project-details/${project.detailsId}`}
+                  className="know-more-btn"
+                >
+                  Know More
+                </Link>
+              ) : (
+                <button disabled className="know-more-btn-disabled">
+                  Details unavailable
+                </button>
+              )}
             </div>
           </div>
         ))}

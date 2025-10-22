@@ -89,6 +89,7 @@ export const projects = [
   },
 ];
 
+
 export const stack = [
   { name: "Laravel", emoji: "🔥" },
   { name: "HTML", emoji: "📄" },

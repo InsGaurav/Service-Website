@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { login } from "../utils/api";
 import "../styles/login.css";
 
-const Login = () => {
+const Login = ({ setUser }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -22,17 +22,11 @@ const Login = () => {
       console.log("Login response:", res);
 
       if (res.token) {
-        // Store token and user details in localStorage
         localStorage.setItem("token", res.token);
         localStorage.setItem("user", JSON.stringify(res.user));
-        console.log("User stored in localStorage:", res.user);
-        console.log("Token stored in localStorage:", res.token);
- // assuming res.user contains name/email
-        
-        
-        // Redirect to intended page
-        navigate(from, { replace: true, state: { user: res.user } });
+        setUser(res.user); // Update user context/state here
 
+        navigate(from, { replace: true });
       } else {
         alert(res.msg || "Login failed");
       }

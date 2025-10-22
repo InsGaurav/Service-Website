@@ -1,13 +1,29 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {jwtDecode} from "jwt-decode";  // Add this to decode token
 import "./../styles/Navbar.css";
+
 
 function Navbar({ user, setUser }) {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef();
 
+
   useEffect(() => {
+    // Token expiration check on mount
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const { exp } = jwtDecode(token);
+        if (Date.now() >= exp * 1000) {
+          handleLogout();
+        }
+      } catch {
+        handleLogout();
+      }
+    }
+
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
@@ -17,13 +33,17 @@ function Navbar({ user, setUser }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
-    navigate("/");
+    navigate("/login");  // redirect to login after logout
   };
 
+
   const displayName = user?.username || user?.name || user?.email || "Guest";
+
 
   return (
     <nav className="navbar">
@@ -40,7 +60,6 @@ function Navbar({ user, setUser }) {
           <Link to="/career">Career</Link>
           <Link to="/contact">Contact</Link>
           <Link to="/about-us">About Us</Link>
-          
         </div>
 
         <div className="dropdown-wrapper" ref={dropdownRef}>

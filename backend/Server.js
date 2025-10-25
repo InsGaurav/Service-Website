@@ -41,6 +41,8 @@ app.use('/api/jobs', require('./routes/jobRoutes')); // Job routes
 app.use('/api/homepage',homepage); // Homepage routes
 app.use("/api/project-details", projectDetailsRoutes);
 
+
+
 // Connect DB and start server
 connectDB();
 

@@ -13,6 +13,7 @@ import ProjectDetails from "./pages/ProjectDetails";
 import AdminDashboard from "./Components/dashboard/adminDashboard";
 import Project from "./pages/Projects"; 
 import Contact from "./pages/Contact";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -53,6 +54,7 @@ function App() {
             }
           />
         </Route>
+        <Route path="/change-password" element={<ChangePassword />} />
       </Routes>
     </BrowserRouter>
   );

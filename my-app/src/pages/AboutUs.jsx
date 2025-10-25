@@ -98,64 +98,6 @@ const AboutUs = () => {
         </div>
       </div>
 
-      {/* Values Section */}
-      <section className="values-section">
-        <div className="values-content">
-          <div className="values-text">
-            <h2 className="values-title">Our Values</h2>
-            <p className="values-description">
-              Access all your company documents in one centralized location — from shared folders
-              to internal policies and manuals, everything you need is always at your fingertips.
-              Access all your company documents in one centralized location — from shared folders
-              to internal policies and manuals, everything you need is always at your fingertips.
-            </p>
-          </div>
-          <div className="values-image">
-            <img src="/AboutAsset/rectangle-4422.svg" alt="Our Values" />
-          </div>
-        </div>
-      </section>
-
-      {/* Achievements Section */}
-      <section className="achievements-section">
-        <div className="achievements-header">
-          <h2 className="achievements-title">Our Achievement</h2>
-          <p className="achievements-description">
-            Access all your company documents in one centralized location — from shared folders to
-            internal policies and manuals, everything you need is always at your fingertips.<br />
-            <br />
-            Access all your company documents in one centralized location — from shared folders to
-            internal policies and manuals, everything you need is always at your fingertips.
-          </p>
-        </div>
-        <div className="achievements-stats">
-          <div className="stat-item">
-            <h3 className="stat-number">200+</h3>
-            <p className="stat-label">Companies</p>
-          </div>
-          <div className="stat-item">
-            <h3 className="stat-number">5+</h3>
-            <p className="stat-label">Years Experience</p>
-          </div>
-          <div className="stat-item">
-            <h3 className="stat-number">500+</h3>
-            <p className="stat-label">Employees</p>
-          </div>
-          <div className="stat-item">
-            <h3 className="stat-number">20+</h3>
-            <p className="stat-label">County's Software</p>
-          </div>
-        </div>
-      </section>
-
-      
-
-      {/* Partners Section */}
-      <section className="partners-section">
-        <h2 className="partners-title">Company That Work With Us</h2>
-        <img src="/AboutAsset/logos.svg" alt="Company Logos" className="partners-logos" />
-      </section>
-
       {/* About Section */}
       <section className="about-section">
         <div className="about-content">
@@ -189,6 +131,50 @@ const AboutUs = () => {
         </div>
       </section>
 
+
+     
+      {/* Achievements Section */}
+      <section className="achievements-section">
+        <div className="achievements-header">
+          <h2 className="achievements-title">Our Achievement</h2>
+          <p className="achievements-description">
+            Access all your company documents in one centralized location — from shared folders to internal policies and manuals, everything you need is always at your fingertips. Access all your company documents in one centralized location — from shared folders to
+            internal policies and manuals, everything you need is always at your fingertips.Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem dolore porro unde accusamus, tenetur doloremque modi, recusandae ipsam repellendus itaque incidunt debitis? Soluta ipsam, commodi minus molestiae et perspiciatis illo!
+            Illum perferendis iusto corporis eius error beatae minima at, cupiditate sit pariatur nostrum aperiam sapiente magni necessitatibus, numquam qui perspiciatis. Temporibus, autem cumque cum vel rerum neque qui delectus impedit!
+          </p>
+        </div>
+        <div className="achievements-stats">
+          <div className="stat-item">
+            <h3 className="stat-number">200+</h3>
+            <p className="stat-label">Companies</p>
+          </div>
+          <div className="stat-item">
+            <h3 className="stat-number">5+</h3>
+            <p className="stat-label">Years Experience</p>
+          </div>
+          <div className="stat-item">
+            <h3 className="stat-number">500+</h3>
+            <p className="stat-label">Employees</p>
+          </div>
+          <div className="stat-item">
+            <h3 className="stat-number">20+</h3>
+            <p className="stat-label">County's Software</p>
+          </div>
+        </div>
+      </section>
+
+      <br />
+      
+
+      {/* Partners Section */}
+      <section className="partners-section">
+        <h2 className="partners-title">Company That Work With Us</h2>
+        <img src="/AboutAsset/logos.svg" alt="Company Logos" className="partners-logos" />
+      </section>
+
+      <br />
+
+
       {/* Vision Section */}
       <section className="vision-section">
         <div className="vision-content">
@@ -201,6 +187,27 @@ const AboutUs = () => {
               Access all your company documents in one centralized location — from shared folders
               to internal policies and manuals, everything you need is always at your fingertips.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <br />
+      <br />
+      <br />
+            {/* Values Section */}
+       <section className="values-section">
+        <div className="values-content">
+          <div className="values-text">
+            <h2 className="values-title">Our Values</h2>
+            <p className="values-description">
+              Access all your company documents in one centralized location — from shared folders
+              to internal policies and manuals, everything you need is always at your fingertips.
+              Access all your company documents in one centralized location — from shared folders
+              to internal policies and manuals, everything you need is always at your fingertips.
+            </p>
+          </div>
+          <div className="values-image">
+            <img src="/AboutAsset/rectangle-4422.svg" alt="Our Values" />
           </div>
         </div>
       </section>

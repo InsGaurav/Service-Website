@@ -2,35 +2,48 @@ import React, { useState, useEffect } from "react";
 import "../../styles/dashboard/ProjectDetailsManager.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem("token");
 
 const ProjectDetailsManager = () => {
-  const [projects, setProjects] = useState([]);
+  const [projectDetails, setProjectDetails] = useState([]);
+  const [projects, setProjects] = useState([]); // For linking
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [details, setDetails] = useState("");
   const [image, setImage] = useState("");
+  const [projectId, setProjectId] = useState(""); // Link to Project
   const [editIndex, setEditIndex] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch projects on mount
+  const token = localStorage.getItem("token");
+
+  // Fetch project details and projects on mount
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_URL}/project-details`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Failed to fetch projects");
-        const data = await res.json();
-        setProjects(data);
+        const [detailsRes, projectsRes] = await Promise.all([
+          fetch(`${API_URL}/project-details`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${API_URL}/projects`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        if (!detailsRes.ok || !projectsRes.ok) throw new Error("Failed to fetch data");
+
+        const detailsData = await detailsRes.json();
+        const projectsData = await projectsRes.json();
+
+        setProjectDetails(detailsData);
+        setProjects(projectsData);
       } catch (err) {
         alert(err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchProjects();
+    fetchData();
   }, [token]);
 
   const resetForm = () => {
@@ -38,10 +51,10 @@ const ProjectDetailsManager = () => {
     setDescription("");
     setDetails("");
     setImage("");
+    setProjectId("");
     setEditIndex(null);
   };
 
-  // Add new project details
   const handleAdd = async () => {
     if (!title.trim() || !description.trim()) {
       alert("Please fill title and description");
@@ -54,61 +67,59 @@ const ProjectDetailsManager = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, description, details, image }),
+        body: JSON.stringify({ title, description, details, image, projectId: projectId || null }),
       });
       if (!res.ok) throw new Error("Failed to add project details");
-      const newProject = await res.json();
-      setProjects([...projects, newProject]);
+      const newProjectDetail = await res.json();
+      setProjectDetails([...projectDetails, newProjectDetail]);
       resetForm();
     } catch (err) {
       alert(err.message);
     }
   };
 
-  // Delete project details
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this project?")) return;
+    if (!window.confirm("Are you sure you want to delete this project detail?")) return;
     try {
       const res = await fetch(`${API_URL}/project-details/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to delete project details");
-      setProjects(projects.filter((p) => p._id !== id));
+      setProjectDetails(projectDetails.filter((p) => p._id !== id));
     } catch (err) {
       alert(err.message);
     }
   };
 
-  // Start editing
   const handleEdit = (index) => {
-    const proj = projects[index];
+    const detail = projectDetails[index];
     setEditIndex(index);
-    setTitle(proj.title);
-    setDescription(proj.description);
-    setDetails(proj.details || "");
-    setImage(proj.image || "");
+    setTitle(detail.title);
+    setDescription(detail.description);
+    setDetails(detail.details || "");
+    setImage(detail.image || "");
+    setProjectId(detail.projectId || "");
   };
 
-  // Save edits
   const handleSave = async () => {
     if (!title.trim() || !description.trim()) {
       alert("Please fill title and description");
       return;
     }
     try {
-      const projToEdit = projects[editIndex];
-      const res = await fetch(`${API_URL}/project-details/${projToEdit._id}`, {
+      const detailToEdit = projectDetails[editIndex];
+      const res = await fetch(`${API_URL}/project-details/${detailToEdit._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, description, details, image }),
+        body: JSON.stringify({ title, description, details, image, projectId: projectId || null }),
       });
       if (!res.ok) throw new Error("Failed to update project details");
-      const updatedProject = await res.json();
-      setProjects(projects.map((p, i) => (i === editIndex ? updatedProject : p)));
+      const updatedDetail = await res.json();
+      setProjectDetails(projectDetails.map((p, i) => (i === editIndex ? updatedDetail : p)));
       resetForm();
     } catch (err) {
       alert(err.message);
@@ -145,6 +156,16 @@ const ProjectDetailsManager = () => {
           onChange={(e) => setImage(e.target.value)}
         />
 
+        {/* Link to Project */}
+        <select value={projectId} onChange={(e) => setProjectId(e.target.value)}>
+          <option value="">-- Select Project (optional) --</option>
+          {projects.map((proj) => (
+            <option key={proj._id} value={proj._id}>
+              {proj.title} (ID: {proj._id})
+            </option>
+          ))}
+        </select>
+
         <div className="form-actions">
           {editIndex !== null ? (
             <button className="btn btn-edit" onClick={handleSave}>
@@ -163,24 +184,22 @@ const ProjectDetailsManager = () => {
 
       {loading ? (
         <p>Loading project details...</p>
-      ) : projects.length === 0 ? (
+      ) : projectDetails.length === 0 ? (
         <p>No project details added yet.</p>
       ) : (
         <div className="project-list">
-          {projects.map((proj, index) => (
-            <div key={proj._id || index} className="project-card">
-              <h3>{proj.title}</h3>
-              <p>{proj.description}</p>
-              <img src={proj.image} alt={proj.title} />
+          {projectDetails.map((detail, index) => (
+            <div key={detail._id || index} className="project-card">
+              <h3>{detail.title}</h3>
+              <p>{detail.description}</p>
+              {detail.image && <img src={detail.image} alt={detail.title} />}
+              <p>Linked Project ID: {detail.projectId || "None"}</p>
 
               <div className="project-actions">
                 <button className="btn btn-edit" onClick={() => handleEdit(index)}>
                   Edit
                 </button>
-                <button
-                  className="btn btn-delete"
-                  onClick={() => handleDelete(proj._id)}
-                >
+                <button className="btn btn-delete" onClick={() => handleDelete(detail._id)}>
                   Delete
                 </button>
               </div>

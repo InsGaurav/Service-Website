@@ -171,52 +171,59 @@ const Home = () => {
         ))}
 
       {/* Services and Tools Section */}
-      <section className="services-section">
-        <div className="services-container">
-          <div className="services-header">
-            <h2>Design Service We Provide Our Clients</h2>
-            <Link to="/services" className="view-all-button">
-                <span font-size="10px">VIEW ALL</span>
-            </Link>
-          </div>
-          <div className="services-grid">
-            {services.map((service) => (
-              <div className="service-card" key={service._id}>
-                <h3>{service.id}</h3>
-                <p>{service.description}</p>
-                <div
-                  className="card-image"
-                  style={{ backgroundImage: `url(${service.image})` }}
-                >
-                  <div className="card-overlay">
-                    <h4>{service.title}</h4>
-                    <p>{service.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+     {/* Services Section with Unique Classes */}
+<section className="home-services-section">
+  <div className="home-services-container">
+    <div className="home-services-header">
+      <h2>Design Service We<br />Provide Our Clients</h2>
+      <Link to="/services" className="home-services-view-btn">
+        VIEW ALL
+      </Link>
+    </div>
+    <div className="home-services-grid">
+      {services.map((service) => (
+        <div className="home-service-item" key={service._id}>
+          <div className="home-service-number">{service.id}</div>
+          <p className="home-service-desc">{service.description}</p>
+          <div className="home-service-card">
+            <img src={service.image} alt={service.title} />
+            <div className="home-service-overlay">
+              <h4>{service.title}</h4>
+              <p>{service.description}</p>
+            </div>
           </div>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
-      <section className="tools-section">
-        <div className="container">
-          <div className="tools-content">
-            <div className="tools-text">
-              <h2>Tool That We For Our Projects</h2>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Faucibus in
-                libero risus semper habitant arcu eget. Et integer facilisi eget.
-              </p>
-            </div>
-            <div className="tools-grid">
-              {tools.map((toolImg, idx) => (
-                <img src={toolImg.src || toolImg} alt={`Tool ${idx + 1}`} key={toolImg._id || idx} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+
+      {/* Tools Section with Unique Classes */}
+<section className="home-tools-section">
+  <div className="home-tools-container">
+    <div className="home-tools-content">
+      <div className="home-tools-text">
+        <h2>Tool That We Use For Our Projects</h2>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Faucibus in
+          libero risus semper habitant arcu eget. Et integer facilisi eget.
+        </p>
+      </div>
+      <div className="home-tools-grid">
+        {tools.map((toolImg, idx) => (
+          <img 
+            src={toolImg.src || toolImg} 
+            alt={`Tool ${idx + 1}`} 
+            key={toolImg._id || idx}
+            className="home-tool-image"
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
 
       {/* Industries, Additional Industry Images, and CTA Section */}
       <section className="industry-section">

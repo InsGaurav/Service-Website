@@ -45,38 +45,9 @@ const Project = () => {
 
       <Portfolio projects={projects} />
 
-      <section className="services-intro">
-        <div className="services-card">
-          <div className="services-content">
-            <div className="services-text">
-              <h2 className="services-title">Our Services</h2>
-              <p className="services-description">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Faucibus in libero risus semper habitant arcu eget. Et integer
-                facilisi eget diam.
-              </p>
-            </div>
+      
 
-            <div className="services-grid">
-              {[...Array(4)].map((_, index) => (
-                <div key={index} className="service-item">
-                  <div className="service-icon">
-                    <img
-                      src="/ProjectAsset/lettering-3d-text-3.png"
-                      alt="3D Services"
-                    />
-                  </div>
-                  <div className="service-info">
-                    <h3>3D Services</h3>
-                    <p>We have done +50 3D Projects</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
+      
       <Testimonials />
     </div>
   );

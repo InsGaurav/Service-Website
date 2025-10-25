@@ -40,8 +40,7 @@ app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/jobs', require('./routes/jobRoutes')); // Job routes
 app.use('/api/homepage',homepage); // Homepage routes
 app.use("/api/project-details", projectDetailsRoutes);
-
-
+app.use('/api/contact', require('./routes/contact'));
 
 // Connect DB and start server
 connectDB();

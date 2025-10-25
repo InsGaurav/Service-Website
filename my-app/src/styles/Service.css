@@ -163,17 +163,22 @@ body {
   flex-wrap: wrap;
 }
 
+/* Updated Stats - Always Single Line */
 .hero__stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 18px;
-  max-width: 720px;
+  max-width: 900px;
   margin: 0 auto;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 
 .stat {
   text-align: center;
   padding: 6px 8px;
+  flex: 1;
+  min-width: 120px;
 }
 
 .stat__value {
@@ -185,6 +190,7 @@ body {
 .stat__label {
   color: #9fb1c6;
   font-size: 14px;
+  white-space: nowrap;
 }
 
 /* Scroll indicator */
@@ -530,9 +536,7 @@ body {
   .hero__subtitle {
     font-size: 18px;
   }
-  .hero__stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  /* Stats remain in single line - removed grid override */
   .card-grid {
     grid-template-columns: repeat(2, 1fr);
   }
